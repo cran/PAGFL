@@ -1,0 +1,15 @@
+df81fe761549330039da0b448f2de10f *DESCRIPTION
+6decae9048a1037af942121dae332620 *NAMESPACE
+05ccb91326074740d769c3fbabac4f53 *NEWS.md
+c6e908e17eeb6b53e5ad45faa98fba40 *R/PAGFL-package.R
+12c45ecdd7857e45b73cf21aa04eba09 *R/RcppExports.R
+74e6526c384071488c30c127eb2c818f *R/Sim.R
+d91a339711018e2a3bae5a7cbd412cf2 *R/pagfLasso.R
+fad23170cb5e6af9155b5b245e395105 *README.md
+b943a1546a1e17be4eea235ec7b4616b *build/partial.rdb
+24dea919480135e3039a544c9593f64e *man/PAGFL.Rd
+4eed243e71a242eee807b2437295cfb6 *man/sim_DGP.Rd
+c89d6b95d18721894ab45341d0fbc7a6 *src/Makevars
+c89d6b95d18721894ab45341d0fbc7a6 *src/Makevars.win
+ef76bb424f3160e95301db637411f677 *src/PAGFL-package.cpp
+edf13671b1e8947cdfec2a6981156dcd *src/RcppExports.cpp
