@@ -1,7 +1,7 @@
 Package: PAGFL
 Title: Joint Estimation of Latent Groups and Group-Specific
         Coefficients in Panel Data Models
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(
     person("Paul", "Haimerl", email = "p.haimerl@student.maastrichtuniversity.nl", role = c("aut","cre"), comment = c(ORCID = "0000-0003-3198-8317")),
     person("Stephan", "Smeekes", email = "s.smeekes@maastrichtuniversity.nl", role = "ctb", comment = c(ORCID = "0000-0002-0157-639X")),
@@ -22,11 +22,11 @@ URL: https://github.com/Paul-Haimerl/PAGFL
 Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
 NeedsCompilation: yes
-Packaged: 2024-06-08 18:38:01 UTC; PaulAdmin
+Packaged: 2024-07-23 16:29:54 UTC; PaulAdmin
 Author: Paul Haimerl [aut, cre] (<https://orcid.org/0000-0003-3198-8317>),
   Stephan Smeekes [ctb] (<https://orcid.org/0000-0002-0157-639X>),
   Ines Wilms [ctb] (<https://orcid.org/0000-0003-3269-4601>),
   Ali Mehrabani [ctb] (<https://orcid.org/0000-0002-1848-5582>)
 Depends: R (>= 3.5.0)
 Repository: CRAN
-Date/Publication: 2024-06-08 21:20:02 UTC
+Date/Publication: 2024-07-23 17:00:02 UTC

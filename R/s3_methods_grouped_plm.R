@@ -1,8 +1,8 @@
-#' @name pagfl
-#' @param x of class \code{pagfl}.
-#' @method print pagfl
+#' @name grouped_plm
+#' @param x of class \code{gplm}.
+#' @method print gplm
 #' @export
-print.pagfl <- function(x, ...) {
+print.gplm <- function(x, ...) {
   cat(paste("Groups:", x$groups$n_groups), "\n")
   cat("\nCall:\n")
   print(x$call)
@@ -10,27 +10,27 @@ print.pagfl <- function(x, ...) {
   print(round(x$coefficients, 5))
 }
 
-#' @name pagfl
-#' @param x of class \code{pagfl}.
-#' @method formula pagfl
+#' @name grouped_plm
+#' @param x of class \code{gplm}.
+#' @method formula gplm
 #' @export
-formula.pagfl <- function(x, ...) {
+formula.gplm <- function(x, ...) {
   x$args$formula
 }
 
-#' @name pagfl
-#' @param object of class \code{pagfl}.
-#' @method df.residual pagfl
+#' @name grouped_plm
+#' @param object of class \code{gplm}.
+#' @method df.residual gplm
 #' @export
-df.residual.pagfl <- function(object, ...) {
+df.residual.gplm <- function(object, ...) {
   length(object$args$labs$t) - length(unique(object$args$labs$i)) - ncol(object$coefficients) * object$groups$n_groups
 }
 
-#' @name pagfl
-#' @param object of class \code{pagfl}.
-#' @method summary pagfl
+#' @name grouped_plm
+#' @param object of class \code{gplm}.
+#' @method summary gplm
 #' @export
-summary.pagfl <- function(object, ...) {
+summary.gplm <- function(object, ...) {
   tmp <- object[c("call", "residuals", "coefficients", "groups", "IC", "convergence", "args", "model")]
   k <- ncol(tmp$coefficients)
   N <- length(unique(object$args$labs$i))
@@ -40,12 +40,12 @@ summary.pagfl <- function(object, ...) {
     method = object$args$method, msr = tmp$IC$msr
   )
   out <- c(tmp, r.df = round(measures_vec[1]), r.squared = measures_vec[2], adj.r.squared = measures_vec[3], r.se = measures_vec[4], msr = tmp$IC$msr)
-  class(out) <- "summary.pagfl"
+  class(out) <- "summary.gplm"
   return(out)
 }
 
 #' @export
-print.summary.pagfl <- function(x, ...) {
+print.summary.gplm <- function(x, ...) {
   cat("Call:\n")
   print(x$call)
   unique_i <- unique(x$args$labs$i)
@@ -61,11 +61,8 @@ print.summary.pagfl <- function(x, ...) {
     t_range <- paste0(min_max_t, collapse = "-")
   }
   cat(paste0("\n", balanced, " panel: N = ", N, ", T = ", t_range, ", obs = ", length(x$residuals), "\n\n"))
-  cat("Convergence reached:\n")
-  cat(x$convergence$convergence, paste0("(", x$convergence$iter, " iterations)\n"))
   cat("\nInformation criterion:\n")
-  ic_vec <- c(IC = x$IC$IC, lambda = x$IC$lambda)
-  print(ic_vec)
+  print(c(IC = x$IC$IC))
   cat("\nResiduals:\n")
   resid_vec <- x$residuals
   quantile_vec <- round(stats::quantile(resid_vec, probs = c(0, .25, .5, .75, 1)), 5)
@@ -84,11 +81,11 @@ print.summary.pagfl <- function(x, ...) {
   cat("\nMultiple R-squared:", paste0(round(x$r.squared, 5), ","), "Adjusted R-squared:", round(x$adj.r.squared, 5), "\n")
 }
 
-#' @name pagfl
-#' @param object of class \code{pagfl}.
-#' @method coef pagfl
+#' @name grouped_plm
+#' @param object of class \code{gplm}.
+#' @method coef gplm
 #' @export
-coef.pagfl <- function(object, ...) {
+coef.gplm <- function(object, ...) {
   coef_mat <- object$coefficients
   groups_hat <- object$groups$groups
   beta_mat <- coef_mat[groups_hat, ]
@@ -97,11 +94,11 @@ coef.pagfl <- function(object, ...) {
 }
 
 
-#' @name pagfl
-#' @param object An object of class \code{pagfl}.
-#' @method residuals pagfl
+#' @name grouped_plm
+#' @param object An object of class \code{gplm}.
+#' @method residuals gplm
 #' @export
-residuals.pagfl <- function(object, ...) {
+residuals.gplm <- function(object, ...) {
   resid_vec <- object$residuals
   i_index <- object$args$labs$i
   t_index <- object$args$labs$t
@@ -115,11 +112,11 @@ residuals.pagfl <- function(object, ...) {
 }
 
 
-#' @name pagfl
-#' @param object of class \code{pagfl}.
-#' @method fitted pagfl
+#' @name grouped_plm
+#' @param object of class \code{gplm}.
+#' @method fitted gplm
 #' @export
-fitted.pagfl <- function(object, ...) {
+fitted.gplm <- function(object, ...) {
   fitted_vec <- object$fitted
   i_index <- object$args$labs$i
   t_index <- object$args$labs$t
@@ -143,29 +140,4 @@ fitted.pagfl <- function(object, ...) {
     print(fit_plot)
   }
   return(fitted_df)
-}
-
-gen_fit_plot_pagfl <- function(plot_df, y_name, col_map) {
-  t_index <- plot_df$t_index
-  y <- plot_df$y
-  fit <- plot_df$fit
-  ggplot2::ggplot(plot_df, ggplot2::aes(x = t_index)) +
-    ggplot2::geom_line(ggplot2::aes(y = y, color = y_name)) +
-    ggplot2::geom_line(ggplot2::aes(y = fit, color = "fit")) +
-    ggplot2::facet_wrap(~i_index, scales = "free") +
-    ggplot2::xlab("") +
-    ggplot2::ylab(y_name) +
-    ggplot2::scale_color_manual(values = col_map) +
-    ggplot2::labs(colour = "") +
-    ggplot2::theme(
-      panel.grid.major = ggplot2::element_blank(),
-      panel.background = ggplot2::element_rect(colour = NA, fill = NA),
-      panel.border = ggplot2::element_rect(colour = "black", fill = NA),
-      panel.grid.minor = ggplot2::element_blank(),
-      legend.position = "bottom",
-      strip.background = ggplot2::element_rect(colour = "#dcdcdc", fill = "#dcdcdc"),
-      strip.text = ggplot2::element_text(face = "bold"),
-      legend.margin = ggplot2::margin(t = -25),
-      legend.text = ggplot2::element_text(size = ggplot2::rel(1))
-    )
 }

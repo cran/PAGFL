@@ -30,16 +30,16 @@ that, we extend the `PAGFL` to time-varying functional coefficients.
 
 ## Installation
 
-You can install the development version of `PAGFL` (1.1.0) from
-[GitHub](https://github.com/) with:
+Always stay up-to-date with the development version of `PAGFL` (1.1.1)
+from [GitHub](https://github.com/):
 
 ``` r
-# install.packages('devtools')
-devtools::install_github('Paul-Haimerl/PAGFL')
+# install.packages("devtools")
+devtools::install_github("Paul-Haimerl/PAGFL")
 library(PAGFL)
 ```
 
-The stable version (1.0.1) is available on CRAN:
+The stable version (1.1.0) is available on CRAN:
 
     install.packages("PAGFL")
 
@@ -169,7 +169,7 @@ summary(estim_set)
 #> Balanced panel: N = 20, T = 150, obs = 3000
 #> 
 #> Convergence reached:
-#> TRUE (50 iterations)
+#> TRUE (51 iterations)
 #> 
 #> Information criterion:
 #>        IC    lambda 
@@ -211,44 +211,44 @@ Jochmans ([2015](https://doi.org/10.1093/restud/rdv007)).
 # Generate a panel where the predictors X correlate with the cross-sectional innovation, 
 # but can be instrumented with q = 3 variables in Z. Furthermore, include GARCH(1,1) 
 # innovations, an AR lag of the dependent variable, and specific group sizes
-sim_endo <- sim_DGP(N = 25, n_periods = 200, p = 2, n_groups = 3, group_proportions = c(0.3, 0.3, 0.4), 
-error_spec = 'GARCH', q = 2, dynamic = TRUE)
+sim_endo <- sim_DGP(N = 20, n_periods = 200, p = 2, n_groups = 3, group_proportions = c(0.3, 0.3, 0.4), 
+error_spec = 'GARCH', q = 2, dynamic = FALSE)
 data_endo <- sim_endo$data
 Z <- sim_endo$Z
 
 # Note that the method PGMM and the instrument matrix Z needs to be passed
-estim_endo <- pagfl(y ~ ., data = data_endo, n_periods = 200, lambda = 15, method = 'PGMM', Z = Z, bias_correc = TRUE, max_iter = 20e3)
+estim_endo <- pagfl(y ~ ., data = data_endo, n_periods = 200, lambda = 2, method = "PGMM", Z = Z, bias_correc = TRUE, max_iter = 50e3)
 summary(estim_endo)
 #> Call:
-#> pagfl(formula = y ~ ., data = data_endo, n_periods = 200, lambda = 15, 
-#>     method = "PGMM", Z = Z, bias_correc = TRUE, max_iter = 20000)
+#> pagfl(formula = y ~ ., data = data_endo, n_periods = 200, lambda = 2, 
+#>     method = "PGMM", Z = Z, bias_correc = TRUE, max_iter = 50000)
 #> 
-#> Balanced panel: N = 25, T = 200, obs = 4975
+#> Balanced panel: N = 20, T = 200, obs = 3980
 #> 
 #> Convergence reached:
-#> FALSE (20000 iterations)
+#> TRUE (14632 iterations)
 #> 
 #> Information criterion:
-#>      IC  lambda 
-#> 56.2871 15.0000 
+#>       IC   lambda 
+#> 1.971293 2.000000 
 #> 
 #> Residuals:
-#>       Min        1Q    Median        3Q       Max 
-#> -97.91933  -2.40370   0.01101   2.41854  77.69418 
+#>      Min       1Q   Median       3Q      Max 
+#> -4.87011 -0.90055  0.01193  0.90767  5.54203 
 #> 
 #> 3 groups:
-#>  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
-#>  1  2  2  1  2  2  2  2  2  1  1  1  1  1  1  1  1  1  1  2  3  1  1  1  1 
+#>  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+#>  1  2  3  3  3  2  2  3  1  3  2  2  1  1  2  1  3  1  3  3 
 #> 
 #> Coefficients:
-#>                 X1       X2
-#> Group 1  -2.01709  1.07102
-#> Group 2  -2.08412 -0.93513
-#> Group 3 -10.47215  4.24136
+#>                X1       X2
+#> Group 1  0.55337 -1.22836
+#> Group 2 -0.88484 -0.89231
+#> Group 3  1.60547 -1.43718
 #> 
-#> Residual standard error: 7.51953 on 4948 degrees of freedom
-#> Mean squared error 56.23651
-#> Multiple R-squared: -1.88888, Adjusted R-squared: -1.90406
+#> Residual standard error: 1.38812 on 3958 degrees of freedom
+#> Mean squared error 1.91621
+#> Multiple R-squared: 0.87079, Adjusted R-squared: 0.8701
 ```
 
 Furthermore, `pagfl` lets you select a minimum group size, adjust the
@@ -285,23 +285,23 @@ summary(tv_estim)
 #> Balanced panel: N = 20, T = 100, obs = 2000
 #> 
 #> Convergence reached:
-#> TRUE (139 iterations)
+#> TRUE (212 iterations)
 #> 
 #> Information criterion:
 #>      IC  lambda 
-#> 1.21839 5.00000 
+#> 1.16747 5.00000 
 #> 
 #> Residuals:
 #>      Min       1Q   Median       3Q      Max 
-#> -3.79401 -0.67692  0.01779  0.64793  2.87300 
+#> -3.57761 -0.68826  0.00820  0.70118  3.40708 
 #> 
 #> 3 groups:
 #>  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
-#>  1  1  2  3  3  2  1  3  1  1  2  3  2  1  2  1  3  3  2  3 
+#>  1  1  1  2  2  2  1  3  3  3  2  2  3  1  3  1  2  3  2  3 
 #> 
-#> Residual standard error: 1.00869 on 1974 degrees of freedom
-#> Mean squared error 1.00424
-#> Multiple R-squared: 0.73891, Adjusted R-squared: 0.7356
+#> Residual standard error: 1.02901 on 1974 degrees of freedom
+#> Mean squared error 1.04509
+#> Multiple R-squared: 0.74213, Adjusted R-squared: 0.73886
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
@@ -357,26 +357,26 @@ summary(tv_estim_unbalanced)
 #> tv_pagfl(formula = y ~ 1, data = tv_data, index = c("i_index", 
 #>     "t_index"), lambda = 5)
 #> 
-#> Unbalanced panel: N = 20, T = 62-78, obs = 1376
+#> Unbalanced panel: N = 20, T = 64-75, obs = 1379
 #> 
 #> Convergence reached:
-#> TRUE (164 iterations)
+#> TRUE (950 iterations)
 #> 
 #> Information criterion:
 #>     IC lambda 
-#> 1.1954 5.0000 
+#> 1.1915 5.0000 
 #> 
 #> Residuals:
 #>      Min       1Q   Median       3Q      Max 
-#> -3.60335 -0.67652  0.01618  0.62322  2.96063 
+#> -3.43491 -0.69055 -0.00812  0.68488  3.63894 
 #> 
 #> 3 groups:
 #>  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
-#>  1  1  2  3  3  2  1  3  1  1  2  3  2  1  2  1  3  3  2  3 
+#>  1  1  1  2  2  2  1  2  3  3  2  2  3  1  3  1  2  3  2  2 
 #> 
-#> Residual standard error: 1.00007 on 1350 degrees of freedom
-#> Mean squared error 0.98125
-#> Multiple R-squared: 0.74365, Adjusted R-squared: 0.7389
+#> Residual standard error: 1.04387 on 1353 degrees of freedom
+#> Mean squared error 1.06912
+#> Multiple R-squared: 0.73683, Adjusted R-squared: 0.73197
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />

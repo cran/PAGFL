@@ -1,9 +1,9 @@
-#' @name tv_pagfl
-#' @param object of class \code{tvpagfl}.
-#' @method summary tvpagfl
+#' @name grouped_tv_plm
+#' @param object of class \code{tv_gplm}.
+#' @method summary tv_gplm
 #' @export
-summary.tvpagfl <- function(object, ...) {
-  tmp <- object[c("call", "residuals", "coefficients", "groups", "IC", "convergence", "args", "model")]
+summary.tv_gplm <- function(object, ...) {
+  tmp <- object[c("call", "residuals", "coefficients", "groups", "IC", "args", "model")]
   k_tv <- ncol(tmp$coefficients$tv) * (tmp$args$d + tmp$args$M + 1)
   k_const <- ifelse(is.null(ncol(tmp$coefficients$const)), 0, ncol(tmp$coefficients$const))
   k <- k_tv + k_const
@@ -11,23 +11,23 @@ summary.tvpagfl <- function(object, ...) {
   i_index <- as.numeric(factor(object$args$labs$i))
   measures_vec <- fitMeasures(N = N, k = k, y = object$model[[1]], i_index = i_index, method = "PLS", msr = tmp$IC$msr)
   out <- c(tmp, r.df = round(measures_vec[1]), r.squared = measures_vec[2], adj.r.squared = measures_vec[3], r.se = measures_vec[4], msr = tmp$IC$msr)
-  class(out) <- "summary.tvpagfl"
+  class(out) <- "summary.tv_gplm"
   return(out)
 }
 
-#' @name tv_pagfl
-#' @param x of class \code{tvpagfl}.
-#' @method formula tvpagfl
+#' @name grouped_tv_plm
+#' @param x of class \code{tv_gplm}.
+#' @method formula tv_gplm
 #' @export
-formula.tvpagfl <- function(x, ...) {
+formula.tv_gplm <- function(x, ...) {
   x$args$formula
 }
 
-#' @name tv_pagfl
-#' @param object of class \code{tvpagfl}.
-#' @method df.residual tvpagfl
+#' @name grouped_tv_plm
+#' @param object of class \code{tv_gplm}.
+#' @method df.residual tv_gplm
 #' @export
-df.residual.tvpagfl <- function(object, ...) {
+df.residual.tv_gplm <- function(object, ...) {
   M <- object$args$M + object$args$d + 1
   df_fe <- length(unique(object$args$labs$i))
   p <- max(ncol(object$coefficients$tv), 0)
@@ -35,18 +35,18 @@ df.residual.tvpagfl <- function(object, ...) {
   length(object$args$labs$t) - df_fe - (p * M + p_const) * object$groups$n_groups
 }
 
-#' @name tv_pagfl
-#' @param x of class \code{tvpagfl}.
-#' @method print tvpagfl
+#' @name grouped_tv_plm
+#' @param x of class \code{tv_gplm}.
+#' @method print tv_gplm
 #' @export
-print.tvpagfl <- function(x, ...) {
+print.tv_gplm <- function(x, ...) {
   cat(paste("Groups:", x$groups$n_groups), "\n")
   cat("\nCall:\n")
   print(x$call)
 }
 
 #' @export
-print.summary.tvpagfl <- function(x, ...) {
+print.summary.tv_gplm <- function(x, ...) {
   cat("Call:\n")
   print(x$call)
   unique_i <- unique(x$args$labs$i)
@@ -62,11 +62,8 @@ print.summary.tvpagfl <- function(x, ...) {
     t_range <- paste0(min_max_t, collapse = "-")
   }
   cat(paste0("\n", balanced, " panel: N = ", N, ", T = ", t_range, ", obs = ", length(x$residuals), "\n\n"))
-  cat("Convergence reached:\n")
-  cat(x$convergence$convergence, paste0("(", x$convergence$iter, " iterations)\n"))
   cat("\nInformation criterion:\n")
-  ic_vec <- c(IC = x$IC$IC, lambda = x$IC$lambda)
-  print(round(ic_vec, 5))
+  print(round(c(IC = x$IC$IC), 5))
   cat("\nResiduals:\n")
   resid_vec <- x$residuals
   quantile_vec <- round(stats::quantile(resid_vec, probs = c(0, .25, .5, .75, 1)), 5)
@@ -102,35 +99,11 @@ print.summary.tvpagfl <- function(x, ...) {
   print(coef_plot)
 }
 
-gen_coef_plot_tvpagfl <- function(coef_df, legend_position) {
-  coef <- coef_df$coef
-  index <- coef_df$index
-  Group <- coef_df$Group
-  var_name <- coef_df$var_name
-  ggplot2::ggplot(coef_df, ggplot2::aes(x = index, y = coef)) +
-    ggplot2::geom_line(ggplot2::aes(color = Group), na.rm = TRUE) +
-    ggplot2::facet_grid(rows = ggplot2::vars(var_name), scales = "free") +
-    ggplot2::xlab("") +
-    ggplot2::ylab("") +
-    ggplot2::theme(
-      panel.grid.major = ggplot2::element_blank(),
-      panel.background = ggplot2::element_rect(colour = NA, fill = NA),
-      panel.border = ggplot2::element_rect(colour = "black", fill = NA),
-      panel.grid.minor = ggplot2::element_blank(),
-      legend.position = legend_position,
-      strip.background = ggplot2::element_rect(colour = "#dcdcdc", fill = "#dcdcdc"),
-      strip.text = ggplot2::element_text(face = "bold", size = ggplot2::rel(1)),
-      legend.margin = ggplot2::margin(t = -25),
-      legend.title = ggplot2::element_text(face = "italic")
-    )
-}
-
-
-#' @name tv_pagfl
-#' @param object of class \code{tvpagfl}.
-#' @method coef tvpagfl
+#' @name grouped_tv_plm
+#' @param object of class \code{tv_gplm}.
+#' @method coef tv_gplm
 #' @export
-coef.tvpagfl <- function(object, ...) {
+coef.tv_gplm <- function(object, ...) {
   tv <- object$coefficients$tv
   if (!is.null(object$coefficients$const)) {
     const <- object$coefficients$const
@@ -149,11 +122,11 @@ coef.tvpagfl <- function(object, ...) {
 }
 
 
-#' @name tv_pagfl
-#' @param object of class \code{tvpagfl}.
-#' @method residuals tvpagfl
+#' @name grouped_tv_plm
+#' @param object of class \code{tv_gplm}.
+#' @method residuals tv_gplm
 #' @export
-residuals.tvpagfl <- function(object, ...) {
+residuals.tv_gplm <- function(object, ...) {
   resid_vec <- object$residuals
   i_index <- object$args$labs$i
   t_index <- object$args$labs$t
@@ -167,11 +140,11 @@ residuals.tvpagfl <- function(object, ...) {
 }
 
 
-#' @name tv_pagfl
-#' @param object of class \code{tvpagfl}.
-#' @method fitted tvpagfl
+#' @name grouped_tv_plm
+#' @param object of class \code{tv_gplm}.
+#' @method fitted tv_gplm
 #' @export
-fitted.tvpagfl <- function(object, ...) {
+fitted.tv_gplm <- function(object, ...) {
   fitted_vec <- object$fitted
   i_index <- object$args$labs$i
   t_index <- object$args$labs$t
@@ -194,29 +167,4 @@ fitted.tvpagfl <- function(object, ...) {
     print(fit_plot)
   }
   return(fitted_df)
-}
-
-gen_fit_plot_tvpagfl <- function(plot_df, y_name, col_map) {
-  t_index <- plot_df$t_index
-  y <- plot_df$y
-  fit <- plot_df$fit
-  ggplot2::ggplot(plot_df, ggplot2::aes(x = t_index)) +
-    ggplot2::geom_line(ggplot2::aes(y = y, color = y_name)) +
-    ggplot2::geom_line(ggplot2::aes(y = fit, color = "fit")) +
-    ggplot2::facet_wrap(~i_index, scales = "free") +
-    ggplot2::xlab("") +
-    ggplot2::ylab(y_name) +
-    ggplot2::scale_color_manual(values = col_map) +
-    ggplot2::labs(colour = "") +
-    ggplot2::theme(
-      panel.grid.major = ggplot2::element_blank(),
-      panel.background = ggplot2::element_rect(colour = NA, fill = NA),
-      panel.border = ggplot2::element_rect(colour = "black", fill = NA),
-      panel.grid.minor = ggplot2::element_blank(),
-      legend.position = "bottom",
-      strip.background = ggplot2::element_rect(colour = "#dcdcdc", fill = "#dcdcdc"),
-      strip.text = ggplot2::element_text(face = "bold"),
-      legend.margin = ggplot2::margin(t = -25),
-      legend.text = ggplot2::element_text(size = ggplot2::rel(1))
-    )
 }

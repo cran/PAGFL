@@ -29,11 +29,19 @@ delete_missing_t <- function(i_index, t_index, K_hat, groups_hat, alpha_hat) {
     .Call(`_PAGFL_delete_missing_t`, i_index, t_index, K_hat, groups_hat, alpha_hat)
 }
 
-fitMeasures <- function(N, k, residuals, y, i_index, method) {
-    .Call(`_PAGFL_fitMeasures`, N, k, residuals, y, i_index, method)
+fitMeasures <- function(N, k, y, i_index, method, msr) {
+    .Call(`_PAGFL_fitMeasures`, N, k, y, i_index, method, msr)
 }
 
 getFE <- function(y, i_index, N, method) {
     .Call(`_PAGFL_getFE`, y, i_index, N, method)
+}
+
+tv_pagfl_oracle_routine <- function(y, X, X_const, d, groups, M, i_index, t_index, N, p_const, rho, parallel) {
+    .Call(`_PAGFL_tv_pagfl_oracle_routine`, y, X, X_const, d, groups, M, i_index, t_index, N, p_const, rho, parallel)
+}
+
+pagfl_oracle_routine <- function(y, X, groups, method, Z, i_index, t_index, N, bias_correc, rho, parallel) {
+    .Call(`_PAGFL_pagfl_oracle_routine`, y, X, groups, method, Z, i_index, t_index, N, bias_correc, rho, parallel)
 }
 
