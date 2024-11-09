@@ -5,7 +5,8 @@
 
 <!-- badges: start -->
 
-[![CRAN_Version_Badge](http://www.r-pkg.org/badges/version/PAGFL)](https://cran.r-project.org/package=PAGFL)
+[![CRAN
+status](http://www.r-pkg.org/badges/version/PAGFL)](https://cran.r-project.org/package=PAGFL)
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/grand-total/PAGFL)](https://cran.r-project.org/package=PAGFL)
 [![License_GPLv3_Badge](https://img.shields.io/badge/License-GPLv3-yellow.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/Paul-Haimerl/PAGFL/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Paul-Haimerl/PAGFL/actions/workflows/R-CMD-check.yaml)
@@ -30,7 +31,7 @@ that, we extend the `PAGFL` to time-varying functional coefficients.
 
 ## Installation
 
-Always stay up-to-date with the development version of `PAGFL` (1.1.1)
+Always stay up-to-date with the development version of `PAGFL` (1.1.2)
 from [GitHub](https://github.com/):
 
 ``` r
@@ -39,13 +40,13 @@ devtools::install_github("Paul-Haimerl/PAGFL")
 library(PAGFL)
 ```
 
-The stable version (1.1.0) is available on CRAN:
+The stable version (1.1.1) is available on CRAN:
 
     install.packages("PAGFL")
 
 ## Data
 
-The `PAGFL` packages includes a function that automatically simulates a
+The `PAGFL` package includes a function that automatically simulates a
 panel data set with a group structure in the slope coefficients:
 
 ``` r
@@ -75,15 +76,16 @@ details.
 
 ## Applying PAGFL
 
-To execute the PAGFL procedure, simply pass the dependent and
-independent variables, the number of time periods, and a penalization
-parameter $\lambda$.
+To execute the PAGFL procedure, pass the dependent and independent
+variables, the number of time periods, and a penalization parameter
+$\lambda$.
 
 ``` r
-estim <- pagfl(y ~ X1 + X2, data = data, n_periods = 150, lambda = 20)
+estim <- pagfl(y ~ X1 + X2, data = data, n_periods = 150, lambda = 20, verbose = F)
 summary(estim)
 #> Call:
-#> pagfl(formula = y ~ X1 + X2, data = data, n_periods = 150, lambda = 20)
+#> pagfl(formula = y ~ X1 + X2, data = data, n_periods = 150, lambda = 20, 
+#>     verbose = F)
 #> 
 #> Balanced panel: N = 20, T = 150, obs = 3000
 #> 
@@ -91,8 +93,8 @@ summary(estim)
 #> TRUE (49 iterations)
 #> 
 #> Information criterion:
-#>        IC    lambda 
-#>  1.353997 20.000000 
+#>     IC lambda 
+#>  1.354 20.000 
 #> 
 #> Residuals:
 #>      Min       1Q   Median       3Q      Max 
@@ -112,7 +114,7 @@ summary(estim)
 #> Multiple R-squared: 0.65845, Adjusted R-squared: 0.65605
 ```
 
-`pagfl()` returns an object of type `pagfl` which holds
+`pagfl()` returns an object of type `pagfl`, which holds
 
 1.  `model`: A `data.frame` containing the dependent and explanatory
     variables as well as individual and time indices (if provided).
@@ -161,10 +163,11 @@ names also appear in the output.
 colnames(data)[-1] <- c("a", "b")
 
 lambda_set <- exp(log(10) * seq(log10(1e-4), log10(10), length.out = 10))
-estim_set <- pagfl(y ~ a + b, data = data, n_periods = 150, lambda = lambda_set)
+estim_set <- pagfl(y ~ a + b, data = data, n_periods = 150, lambda = lambda_set, verbose = F)
 summary(estim_set)
 #> Call:
-#> pagfl(formula = y ~ a + b, data = data, n_periods = 150, lambda = lambda_set)
+#> pagfl(formula = y ~ a + b, data = data, n_periods = 150, lambda = lambda_set, 
+#>     verbose = F)
 #> 
 #> Balanced panel: N = 20, T = 150, obs = 3000
 #> 
@@ -172,8 +175,8 @@ summary(estim_set)
 #> TRUE (51 iterations)
 #> 
 #> Information criterion:
-#>        IC    lambda 
-#> 1.1287693 0.2154435 
+#>      IC  lambda 
+#> 1.12877 0.21544 
 #> 
 #> Residuals:
 #>      Min       1Q   Median       3Q      Max 
@@ -208,20 +211,23 @@ recommend using a Jackknife bias correction, as proposed by Dhaene and
 Jochmans ([2015](https://doi.org/10.1093/restud/rdv007)).
 
 ``` r
-# Generate a panel where the predictors X correlate with the cross-sectional innovation, 
-# but can be instrumented with q = 3 variables in Z. Furthermore, include GARCH(1,1) 
+# Generate a panel where the predictors X correlate with the cross-sectional innovation,
+# but can be instrumented with q = 3 variables in Z. Furthermore, include GARCH(1,1)
 # innovations, an AR lag of the dependent variable, and specific group sizes
-sim_endo <- sim_DGP(N = 20, n_periods = 200, p = 2, n_groups = 3, group_proportions = c(0.3, 0.3, 0.4), 
-error_spec = 'GARCH', q = 2, dynamic = FALSE)
+sim_endo <- sim_DGP(
+  N = 20, n_periods = 200, p = 2, n_groups = 3, group_proportions = c(0.3, 0.3, 0.4),
+  error_spec = "GARCH", q = 2, dynamic = FALSE
+)
 data_endo <- sim_endo$data
 Z <- sim_endo$Z
 
-# Note that the method PGMM and the instrument matrix Z needs to be passed
-estim_endo <- pagfl(y ~ ., data = data_endo, n_periods = 200, lambda = 2, method = "PGMM", Z = Z, bias_correc = TRUE, max_iter = 50e3)
+# Note that the method PGMM and the instrument matrix Z need to be passed
+estim_endo <- pagfl(y ~ ., data = data_endo, n_periods = 200, lambda = 2, method = "PGMM", Z = Z, bias_correc = TRUE, max_iter = 50e3, verbose = F)
 summary(estim_endo)
 #> Call:
 #> pagfl(formula = y ~ ., data = data_endo, n_periods = 200, lambda = 2, 
-#>     method = "PGMM", Z = Z, bias_correc = TRUE, max_iter = 50000)
+#>     method = "PGMM", Z = Z, bias_correc = TRUE, max_iter = 50000, 
+#>     verbose = F)
 #> 
 #> Balanced panel: N = 20, T = 200, obs = 3980
 #> 
@@ -229,8 +235,8 @@ summary(estim_endo)
 #> TRUE (14632 iterations)
 #> 
 #> Information criterion:
-#>       IC   lambda 
-#> 1.971293 2.000000 
+#>      IC  lambda 
+#> 1.97129 2.00000 
 #> 
 #> Residuals:
 #>      Min       1Q   Median       3Q      Max 
@@ -258,12 +264,11 @@ and modify a list of further settings. Visit the documentation
 
 ## The Time-varying PAGFL
 
-The development version of the package also includes the functions
-`sim_tv_DGP()`and `tv_pagfl()`, which generate and estimate a grouped
-panel data models with the time-varying coefficients
-$\beta_{it} = \beta_i \left( \frac{t}{T} \right)$. Just like in the
-static case, the functional coefficients admit to a group structure
-$\beta_{it} = \sum_{k = 1}^K \alpha_k \left( \frac{t}{T} \right) 1 \{i \in G_k \}$.
+The package also includes the functions `sim_tv_DGP()`and `tv_pagfl()`,
+which generate and estimate grouped panel data models with the
+time-varying coefficients $\beta_i (t/T)$. Just like in the static case,
+the functional coefficients admit to a group structure
+$\beta_{i} (t/T) = \sum_{k = 1}^K \alpha_k (t/T) \boldsymbol{1} \{i \in G_k \}$.
 Following Su et
 al. ([2019](https://doi.org/10.1080/07350015.2017.1340299)), the
 time-varying coefficients are estimated using polynomial B-spline
@@ -276,11 +281,11 @@ n_periods <- 100
 tv_sim <- sim_tv_DGP(N = N, n_periods = n_periods, sd_error = 1, intercept = TRUE, p = 1)
 tv_data <- tv_sim$data
 
-tv_estim <- tv_pagfl(y ~ 1, data = tv_data, n_periods = n_periods, lambda = 5)
+tv_estim <- tv_pagfl(y ~ 1, data = tv_data, n_periods = n_periods, lambda = 5, verbose = F)
 summary(tv_estim)
 #> Call:
 #> tv_pagfl(formula = y ~ 1, data = tv_data, n_periods = n_periods, 
-#>     lambda = 5)
+#>     lambda = 5, verbose = F)
 #> 
 #> Balanced panel: N = 20, T = 100, obs = 2000
 #> 
@@ -306,7 +311,7 @@ summary(tv_estim)
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
-`tv_pagfl()` returns an object of class `tvpagfl` which contains
+`tv_pagfl()` returns an object of class `tvpagfl`, which contains
 
 1.  `model`: A `data.frame` containing the dependent and explanatory
     variables as well as individual and time indices (if provided).
@@ -349,13 +354,13 @@ delete_index <- as.logical(rbinom(n = N * n_periods, prob = 0.7, size = 1))
 tv_data$i_index <- rep(1:N, each = n_periods)
 tv_data$t_index <- rep(1:n_periods, N)
 # Delete some observations
-tv_data <- tv_data[delete_index,]
+tv_data <- tv_data[delete_index, ]
 # Apply the time-varying PAGFL to an unbalanced panel
-tv_estim_unbalanced <- tv_pagfl(y ~ 1, data = tv_data, index = c("i_index", "t_index"), lambda = 5)
+tv_estim_unbalanced <- tv_pagfl(y ~ 1, data = tv_data, index = c("i_index", "t_index"), lambda = 5, verbose = F)
 summary(tv_estim_unbalanced)
 #> Call:
 #> tv_pagfl(formula = y ~ 1, data = tv_data, index = c("i_index", 
-#>     "t_index"), lambda = 5)
+#>     "t_index"), lambda = 5, verbose = F)
 #> 
 #> Unbalanced panel: N = 20, T = 64-75, obs = 1379
 #> 
@@ -386,6 +391,20 @@ shown here. For example, it is possible to adjust the polyomial degree
 and the number of interior knots in the spline basis system, or estimate
 a panel data model with a mix of time-varying and time-constant
 coefficients. See `?tv_pagfl()` for details.
+
+## Future Outlook
+
+The package is still under active development. Future versions are
+planned to include
+
+- Global coefficients
+- Un-penalized individual coefficients
+- Inference methods
+
+You are not a R-user? Worry not - An equivalent Python library is in the
+works.
+
+Please feel free to reach out if you have any further suggestions.
 
 ## References
 

@@ -22,8 +22,8 @@
     TRUE (542 iterations)
     
     Information criterion:
-          IC   lambda 
-    1.045192 5.000000 
+         IC  lambda 
+    1.04519 5.00000 
     
     Residuals:
          Min       1Q   Median       3Q      Max 
@@ -40,7 +40,7 @@
     Group 3  0.22479  1.54219
     
     Residual standard error: 0.99552 on 2978 degrees of freedom
-    Mean squared error 0.9838
+    Mean squared error: 0.9838
     Multiple R-squared: 0.91956, Adjusted R-squared: 0.91899 
 
 ---
@@ -58,8 +58,8 @@
       TRUE (25 iterations)
       
       Information criterion:
-               IC      lambda 
-         7.537249 1000.000000 
+              IC     lambda 
+         7.53725 1000.00000 
       
       Residuals:
             Min        1Q    Median        3Q       Max 
@@ -72,7 +72,7 @@
       Group 1 -2.08433 0.67843
       
       Residual standard error: 2.75179 on 2976 degrees of freedom
-      Mean squared error 7.51678
+      Mean squared error: 7.51678
       Multiple R-squared: 0.38579, Adjusted R-squared: 0.38146 
 
 # S3 grouped_plm
@@ -99,8 +99,8 @@
     
     
     Information criterion:
-          IC 
-    1.045192 
+         IC 
+    1.04519 
     
     Residuals:
          Min       1Q   Median       3Q      Max 
@@ -117,7 +117,7 @@
     Group 3  0.22479  1.54219
     
     Residual standard error: 0.99552 on 2978 degrees of freedom
-    Mean squared error 0.9838
+    Mean squared error: 0.9838
     Multiple R-squared: 0.91956, Adjusted R-squared: 0.91899 
 
 ---
@@ -133,8 +133,8 @@
       
       
       Information criterion:
-            IC 
-      7.537249 
+           IC 
+      7.53725 
       
       Residuals:
             Min        1Q    Median        3Q       Max 
@@ -147,7 +147,7 @@
       Group 1 -2.08433 0.67843
       
       Residual standard error: 2.75179 on 2976 degrees of freedom
-      Mean squared error 7.51678
+      Mean squared error: 7.51678
       Multiple R-squared: 0.38579, Adjusted R-squared: 0.38146 
 
 # S3 tv_pagfl
@@ -172,7 +172,7 @@
     
     Information criterion:
          IC  lambda 
-    1.46375 7.00000 
+    0.46339 7.00000 
     
     Residuals:
          Min       1Q   Median       3Q      Max 
@@ -183,7 +183,7 @@
      1  1  2  3  4  5  5  3  5  3 
     
     Residual standard error: 1.02363 on 980 degrees of freedom
-    Mean squared error 1.02686
+    Mean squared error: 1.02686
     Multiple R-squared: 0.81416, Adjusted R-squared: 0.81055 
 
 # S3 grouped_tv_plm
@@ -208,7 +208,7 @@
     
     Information criterion:
          IC 
-    1.31536 
+    0.31399 
     
     Residuals:
          Min       1Q   Median       3Q      Max 
@@ -219,7 +219,7 @@
      1  1  2  3  1  2  2  3  2  3 
     
     Residual standard error: 1.03669 on 980 degrees of freedom
-    Mean squared error 1.05323
+    Mean squared error: 1.05323
     Multiple R-squared: 0.80939, Adjusted R-squared: 0.80569 
 
 # S3 tv_pagfl const coef unbalanced
@@ -235,7 +235,7 @@
     
     Information criterion:
           IC   lambda 
-     1.27529 25.00000 
+     0.27202 25.00000 
     
     Residuals:
          Min       1Q   Median       3Q      Max 
@@ -251,7 +251,7 @@
     Group 2 -0.06506
     
     Residual standard error: 1.05644 on 689 degrees of freedom
-    Mean squared error 1.08306
+    Mean squared error: 1.08306
     Multiple R-squared: 0.79851, Adjusted R-squared: 0.79266 
 
 ---
@@ -276,7 +276,7 @@
     
     Information criterion:
          IC 
-    1.28854 
+    0.28854 
     
     Residuals:
          Min       1Q   Median       3Q      Max 
@@ -293,7 +293,7 @@
     Group 3  0.12088
     
     Residual standard error: 1.01522 on 689 degrees of freedom
-    Mean squared error 1.00019
+    Mean squared error: 1.00019
     Multiple R-squared: 0.81393, Adjusted R-squared: 0.80853 
 
 ---

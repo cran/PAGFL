@@ -80,7 +80,7 @@ print.summary.tv_gplm <- function(x, ...) {
     print(round(x$coefficients$const, 5))
   }
   cat("\nResidual standard error:", round(x$r.se, 5), "on", x$r.df, "degrees of freedom\n")
-  cat("Mean squared error", round(x$IC$msr, 5))
+  cat("Mean squared error:", round(x$IC$msr, 5))
   cat("\nMultiple R-squared:", paste0(round(x$r.squared, 5), ","), "Adjusted R-squared:", round(x$adj.r.squared, 5), "\n")
   # Plot of the functional coefficient
   p <- dim(x$coefficients$tv)[2]
@@ -153,16 +153,21 @@ fitted.tv_gplm <- function(object, ...) {
     i_index = i_index,
     t_index = t_index
   )
-  colnames(fitted_df)[-1] <- object$args$labs$index
   plot_df <- fitted_df
-  plot_df$i_index <- as.character(plot_df$i_index)
-  plot_df$y <- object$model[[1]]
-  plot_df <- plot_df[order(plot_df$i_index), ]
-  y_name <- colnames(object$model)[1]
-  col_map <- c("red", "black")
-  names(col_map) <- c("fit", y_name)
+  colnames(fitted_df)[-1] <- object$args$labs$index
   # Plot the fit if feasible
   if (length(unique(i_index)) <= 20) {
+    if (!is.numeric(t_index)) {
+      suppressWarnings(t_index <- as.numeric(t_index))
+      if (all(is.na(t_index))) t_index <- as.integer(factor(object$args$labs$t))
+      plot_df$t_index <- t_index
+    }
+    plot_df$i_index <- as.character(plot_df$i_index)
+    plot_df$y <- object$model[[1]]
+    plot_df <- plot_df[order(plot_df$i_index), ]
+    y_name <- colnames(object$model)[1]
+    col_map <- c("red", "black")
+    names(col_map) <- c("fit", y_name)
     fit_plot <- gen_fit_plot_tvpagfl(plot_df, y_name, col_map)
     print(fit_plot)
   }

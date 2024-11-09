@@ -1,4 +1,14 @@
-# PAGFL 1.1.1 (development version)
+# PAGFL 1.1.2 (development version)
+
+* Fixed backwards compatibility issue with the generic functions `fitted` and `resid`
+* Bugfix when passing index variables and an empty formula `y ~ .` for `tv_pagfl` and `grouped_tv_plm`
+* Improved documentation
+* Changed x-axis label in the plot produced by calling `summary()` of a `tvpagfl` object
+* Bugfix in the plot produced by calling `fitted()` and passing a character time-index variable
+* Added the current algorithm iteration and tuning parameter as a progress counter to the console if option `verbose` is selected
+* Changed the IC selecting the best fitting tuning parameter for the `tv_pagfl` and `grouped_tv_plm` procedures to include the logarithmic mean squared error as the fitness term
+
+# PAGFL 1.1.1
 
 * Introduction of `grouped_plm` and `grouped_tv_plm` to estimate grouped (time-varying) panel data models given an exogenous group structure
 * Remove warm-starts when iterating across different tuning parameters
