@@ -140,6 +140,7 @@ We recommend identifying a suitable \eqn{\lambda} parameter by passing a logarit
 }
 \examples{
 # Simulate a panel with a group structure
+set.seed(1)
 sim <- sim_DGP(N = 20, n_periods = 80, p = 2, n_groups = 3)
 y <- sim$y
 X <- sim$X
@@ -154,7 +155,8 @@ i_index <- rep(1:20, each = 80)
 t_index <- rep(1:80, 20)
 df <- data.frame(y = c(y), X, i_index = i_index, t_index = t_index)
 estim <- pagfl(
-  y ~ ., data = df, index = c("i_index", "t_index"), lambda = 0.5, method = "PLS"
+  y ~ .,
+  data = df, index = c("i_index", "t_index"), lambda = 0.5, method = "PLS"
 )
 summary(estim)
 }

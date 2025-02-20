@@ -20,12 +20,6 @@
 #' @param scales a \eqn{p \times K} matrix of scale parameters of a logistic distribution function used to construct the time-varying coefficients. If left empty, the location parameters are drawn randomly. Default is \code{NULL}.
 #' @param polynomial_coef a \eqn{p \times d \times K} array of coefficients for a the polynomials used to construct the time-varying coefficients. If left empty, the location parameters are drawn randomly. Default is \code{NULL}.
 #' @param sd_error standard deviation of the cross-sectional errors. Default is 1.
-#' @param DGP `r lifecycle::badge("deprecated")` the data generating process. Options are
-#' \describe{
-#'  \item{1}{generates a trend only.}
-#'  \item{2}{simulates a trend and an additional exogenous explanatory variable.}
-#'  \item{1}{draws a dynamic panel data model with one \eqn{AR} lag.}
-#' }
 #'
 #' @details
 #' The scalar dependent variable \eqn{y_{it}} is generated according to the following time-varying grouped panel data model
@@ -48,8 +42,10 @@
 #'
 #' @examples
 #' # Simulate a time-varying panel subject to a time trend and a group structure
-#' sim <- sim_tv_DGP(N = 20, n_periods = 50, intercept = TRUE, p = 1)
+#' set.seed(1)
+#' sim <- sim_tv_DGP(N = 20, n_periods = 50, p = 1)
 #' y <- sim$y
+#' X <- sim$X
 #'
 #' @author Paul Haimerl
 #'
@@ -61,26 +57,12 @@
 #' \item{\code{X}}{a \eqn{NT \times p} matrix of explanatory variables, with \eqn{\bold{X}=(x_1, \dots, x_N)^\prime}, \eqn{x_i = (x_{i1}, \dots, x_{iT})^\prime} and the \eqn{p \times 1} vector \eqn{x_{it}}.}
 #' \item{\code{data}}{a \eqn{NT \times (p + 1)} data.frame of the outcome and the explanatory variables.}
 #' @export
-sim_tv_DGP <- function(N = 50, n_periods = 40, intercept = TRUE, p = 1, n_groups = 3, d = 3, dynamic = FALSE, group_proportions = NULL, error_spec = "iid", locations = NULL, scales = NULL, polynomial_coef = NULL, sd_error = 1, DGP = lifecycle::deprecated()) {
+sim_tv_DGP <- function(N = 50, n_periods = 40, intercept = TRUE, p = 1, n_groups = 3, d = 3, dynamic = FALSE, group_proportions = NULL, error_spec = "iid", locations = NULL, scales = NULL, polynomial_coef = NULL, sd_error = 1) {
   #------------------------------#
   #### Checks                 ####
   #------------------------------#
 
   error_spec <- match.arg(error_spec, c("iid", "AR"))
-  if (lifecycle::is_present(DGP)) {
-    lifecycle::deprecate_warn("1.1.0", "sim_tv_DGP(DGP)", "sim_tv_DGP(p)")
-    if (DGP == 1) {
-      intercept <- TRUE
-      p <- 1
-    } else if (DGP == 2) {
-      intercept <- TRUE
-      p <- 2
-    } else {
-      intercept <- FALSE
-      p <- 1
-      dynamic <- TRUE
-    }
-  }
 
   if (intercept) {
     p_star <- p
@@ -89,7 +71,6 @@ sim_tv_DGP <- function(N = 50, n_periods = 40, intercept = TRUE, p = 1, n_groups
     p_star <- p
   }
   if (dynamic) {
-    p_star <- p_star
     p <- p - 1
   }
   p <- max(p, 0)
@@ -116,6 +97,9 @@ sim_tv_DGP <- function(N = 50, n_periods = 40, intercept = TRUE, p = 1, n_groups
     trend_mat_star <- trend_fctn(coef_mat = cbind(locations[, k], scales[, k]), n_periods = n_periods)
     alpha_mat <- poly_fctn(coef_mat = polynomial_coef[, , k], n_periods = n_periods)
     alpha_array[, , k] <- alpha_mat + 3 * trend_mat_star
+  }
+  if (dynamic) {
+    alpha_array[, 1, ] <- sweep(alpha_array[, 1, ], 2, apply(alpha_array[, 1, ], 2, function(x) max(abs(x)) + 1e-4), "/")
   }
 
   #------------------------------#
@@ -145,17 +129,20 @@ sim_tv_DGP <- function(N = 50, n_periods = 40, intercept = TRUE, p = 1, n_groups
     u <- simAR(errorList = uList)
   }
   # Draw the fixed-effects
-  gamma <- rep(stats::rnorm(N), each = n_periods)
+  gamma <- stats::rnorm(N)
   # Generate the regressors
-  X <- matrix(stats::rnorm(N * p * n_periods), ncol = p)
-  if (intercept & p > 0) {
-    X <- cbind(rep(1, N * n_periods), X)
-  } else if (intercept) {
+  if (intercept & p == 0) {
     X <- as.matrix(rep(1, N * n_periods))
+  } else {
+    X <- matrix(stats::rnorm(N * p * n_periods), ncol = p)
+    if (intercept) {
+      X <- cbind(rep(1, N * n_periods), X)
+    }
   }
+
   # Construct the observations
   if (!dynamic) {
-    y <- rowSums(X * beta_mat) + u + .2 * gamma
+    y <- rowSums(X * beta_mat) + u + rep(gamma, each = n_periods)
   } else {
     y <- rep(0, n_periods * N)
     X_ar <- as.matrix(rep(0, n_periods * N))
@@ -167,19 +154,40 @@ sim_tv_DGP <- function(N = 50, n_periods = 40, intercept = TRUE, p = 1, n_groups
     }
     for (i in 1:N) {
       indx <- (i - 1) * n_periods + 1
+      # Initialize the first observation
       y[indx] <- u[indx]
       if (p > 0) {
         y[indx] <- y[indx] + sum(beta_mat[indx, -1] * X[indx, -1])
       }
+      # Iterate through the time series
       for (t in 1:(n_periods - 1)) {
         X[indx + t, 1] <- y[indx + t - 1]
-        y[indx + t] <- u[indx + t] + sum(X[indx + t, ] * beta_mat[indx + t, ])
+        y[indx + t] <- sum(X[indx + t, ] * beta_mat[indx + t, ]) + gamma[i] + u[indx + t]
       }
     }
-    y <- y + gamma
   }
   data <- data.frame(y = c(y), X)
   return(list(alpha = alpha_array, beta = beta_array, groups = groups, y = y, X = X, data = data))
+}
+
+# Logarithmic CDF as a time trend
+trend_fctn <- function(coef_mat, n_periods) {
+  trends <- apply(coef_mat, 1, function(coefs, n_periods) {
+    1 / (1 + exp(-(((1:n_periods) / n_periods) - coefs[1]) / coefs[2]))
+  }, n_periods = n_periods)
+  return(trends)
+}
+
+# Polynomial coefficient functions
+poly_fctn <- function(coef_mat, n_periods) {
+  if (!is.matrix(coef_mat)) coef_mat <- t(coef_mat)
+  d <- ncol(coef_mat)
+  beta_mat <- apply(coef_mat, 1, function(coefs, n_periods, d) {
+    beta <- rowSums(sapply(1:d, function(x, coefs, n_periods) {
+      coefs[x] * ((1:n_periods) / n_periods)^x
+    }, coefs, n_periods))
+  }, n_periods = n_periods, d = d)
+  return(beta_mat)
 }
 
 # Logarithmic CDF as a time trend

@@ -6,11 +6,12 @@
 <!-- badges: start -->
 
 [![CRAN
-status](http://www.r-pkg.org/badges/version/PAGFL)](https://cran.r-project.org/package=PAGFL)
+status](https://www.r-pkg.org/badges/version/PAGFL)](https://cran.r-project.org/package=PAGFL)
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/grand-total/PAGFL)](https://cran.r-project.org/package=PAGFL)
 [![License_GPLv3_Badge](https://img.shields.io/badge/License-GPLv3-yellow.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![R-CMD-check](https://github.com/Paul-Haimerl/PAGFL/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Paul-Haimerl/PAGFL/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/Paul-Haimerl/PAGFL/graph/badge.svg?token=22WHU5SU63)](https://app.codecov.io/gh/Paul-Haimerl/PAGFL)
+
 <!-- badges: end -->
 
 Unobservable group structures are a common challenge in panel data
@@ -31,7 +32,7 @@ that, we extend the `PAGFL` to time-varying functional coefficients.
 
 ## Installation
 
-Always stay up-to-date with the development version of `PAGFL` (1.1.2)
+Always stay up-to-date with the development version of `PAGFL` (1.1.3)
 from [GitHub](https://github.com/):
 
 ``` r
@@ -40,7 +41,7 @@ devtools::install_github("Paul-Haimerl/PAGFL")
 library(PAGFL)
 ```
 
-The stable version (1.1.1) is available on CRAN:
+The stable version (1.1.2) is available on CRAN:
 
     install.packages("PAGFL")
 
@@ -67,10 +68,10 @@ $G_k \cap G_j = \emptyset$ as well as $|| \alpha_k \neq \alpha_j ||$ for
 any $k \neq j$, $k,j = 1, \dots, K$ (see Mehrabani
 [2023](https://doi.org/10.1016/j.jeconom.2022.12.002), sec. 2).
 
-`sim_DGP` also nests, among other, all DGPs employed in the simulation
+`sim_DGP()` also nests, among other, all DGPs employed in the simulation
 study of Mehrabani
 ([2023](https://doi.org/10.1016/j.jeconom.2022.12.002), sec. 6). I refer
-to the documentation of `sim_DGP` or Mehrabani
+to the documentation of `sim_DGP()` or Mehrabani
 ([2023](https://doi.org/10.1016/j.jeconom.2022.12.002), sec. 6) for more
 details.
 
@@ -81,10 +82,10 @@ variables, the number of time periods, and a penalization parameter
 $\lambda$.
 
 ``` r
-estim <- pagfl(y ~ X1 + X2, data = data, n_periods = 150, lambda = 20, verbose = F)
+estim <- pagfl(y ~ ., data = data, n_periods = 150, lambda = 20, verbose = F)
 summary(estim)
 #> Call:
-#> pagfl(formula = y ~ X1 + X2, data = data, n_periods = 150, lambda = 20, 
+#> pagfl(formula = y ~ ., data = data, n_periods = 150, lambda = 20, 
 #>     verbose = F)
 #> 
 #> Balanced panel: N = 20, T = 150, obs = 3000
@@ -110,7 +111,7 @@ summary(estim)
 #> Group 2 -0.49489 -1.23534
 #> 
 #> Residual standard error: 1.15012 on 2978 degrees of freedom
-#> Mean squared error 1.31307
+#> Mean squared error: 1.31307
 #> Multiple R-squared: 0.65845, Adjusted R-squared: 0.65605
 ```
 
@@ -134,30 +135,30 @@ summary(estim)
     algorithm iterations.
 9.  `call`: The function call.
 
-Furthermore, `pagfl` objects can be used in a variety of useful generic
-methods like `summary()`, `fitted()`, `resid()`, `df.residual`,
-`formula`, and `coef()`.
+> [!TIP]
+> `pagfl` objects can be used in a variety of useful generic methods like `summary()`, `fitted()`, `resid()`, `df.residual`, `formula`, and `coef()`.
 
 ``` r
 estim_fit <- fitted(estim)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
 
-Selecting a $\lambda$ value a priori can be tricky. For instance, it
-seems like `lambda = 20` is too high since the number of groups $K$ is
-underestimated. We suggest iterating over a comprehensive range of
-candidate values to trace out the correct model. To specify a suitable
-grid, create a logarithmic sequence ranging from 0 to a penalty
-parameter that induces an entirely homogeneous model (i.e.,
-$\widehat{K} = 1$). The resulting $\lambda$ grid vector can be passed in
-place of any specific value, and a BIC IC selects the best-fitting
-parameter.
+> [!IMPORTANT]
+> Selecting a $\lambda$ value a priori can be tricky. For instance, it seems like `lambda = 20` is too high since the number of groups $K$ is underestimated.
+
+We suggest iterating over a comprehensive range of candidate values to
+trace out the correct model. To specify a suitable grid, create a
+logarithmic sequence ranging from 0 to a penalty parameter that induces
+an entirely homogeneous model (i.e., $\widehat{K} = 1$). The resulting
+$\lambda$ grid vector can be passed in place of any specific value, and
+a BIC IC selects the best-fitting parameter.
 
 Furthermore, it is also possible to supply a `data.frame` with named
 variables and choose a specific formula that selects the variables in
-that `data.frame`. If the explanatory variables in `X` are named, these
-names also appear in the output.
+that `data.frame`, just like in the base `lm()` function. If the
+explanatory variables in `X` are named, these names also appear in the
+output.
 
 ``` r
 colnames(data)[-1] <- c("a", "b")
@@ -193,12 +194,12 @@ summary(estim_set)
 #> Group 3  0.24172  1.61613
 #> 
 #> Residual standard error: 1.03695 on 2978 degrees of freedom
-#> Mean squared error 1.06738
+#> Mean squared error: 1.06738
 #> Multiple R-squared: 0.72236, Adjusted R-squared: 0.7204
 ```
 
 When, as above, the specific estimation method is left unspecified,
-`pagfl` defaults to penalized Least Squares (*PLS*) `method = 'PLS'`
+`pagfl()` defaults to penalized Least Squares (*PLS*) `method = 'PLS'`
 (Mehrabani, [2023](https://doi.org/10.1016/j.jeconom.2022.12.002),
 sec. 2.2). *PLS* is very efficient but requires weakly exogenous
 regressors. However, even endogenous predictors can be accounted for by
@@ -253,25 +254,23 @@ summary(estim_endo)
 #> Group 3  1.60547 -1.43718
 #> 
 #> Residual standard error: 1.38812 on 3958 degrees of freedom
-#> Mean squared error 1.91621
+#> Mean squared error: 1.91621
 #> Multiple R-squared: 0.87079, Adjusted R-squared: 0.8701
 ```
 
-Furthermore, `pagfl` lets you select a minimum group size, adjust the
-efficiency vs. accuracy trade-off of the iterative estimation algorithm,
-and modify a list of further settings. Visit the documentation
-`?pagfl()` for more information.
+> [!TIP]
+> `pagfl()` lets you select a minimum group size, adjust the efficiency vs. accuracy trade-off of the iterative estimation algorithm, and modify a list of further settings. Visit the documentation `?pagfl()` for more information.
 
 ## The Time-varying PAGFL
 
 The package also includes the functions `sim_tv_DGP()`and `tv_pagfl()`,
-which generate and estimate grouped panel data models with the
-time-varying coefficients $\beta_i (t/T)$. Just like in the static case,
-the functional coefficients admit to a group structure
+which generate and estimate grouped panel data models with time-varying
+coefficients $\beta_i (t/T)$. Just like in the static case, the
+functional coefficients admit to a group structure
 $\beta_{i} (t/T) = \sum_{k = 1}^K \alpha_k (t/T) \boldsymbol{1} \{i \in G_k \}$.
-Following Su et
-al. ([2019](https://doi.org/10.1080/07350015.2017.1340299)), the
-time-varying coefficients are estimated using polynomial B-spline
+Following Huang et al. ([2004](https://www.jstor.org/stable/24307415))
+and Su et al. ([2019](https://doi.org/10.1080/07350015.2017.1340299)),
+the time-varying coefficients are estimated using polynomial B-spline
 functions employing a penalized sieve estimation (*PSE*).
 
 ``` r
@@ -294,7 +293,7 @@ summary(tv_estim)
 #> 
 #> Information criterion:
 #>      IC  lambda 
-#> 1.16747 5.00000 
+#> 0.16648 5.00000 
 #> 
 #> Residuals:
 #>      Min       1Q   Median       3Q      Max 
@@ -305,11 +304,11 @@ summary(tv_estim)
 #>  1  1  1  2  2  2  1  3  3  3  2  2  3  1  3  1  2  3  2  3 
 #> 
 #> Residual standard error: 1.02901 on 1974 degrees of freedom
-#> Mean squared error 1.04509
+#> Mean squared error: 1.04509
 #> Multiple R-squared: 0.74213, Adjusted R-squared: 0.73886
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+![](man/figures/README-unnamed-chunk-8-1.png)<!-- -->
 
 `tv_pagfl()` returns an object of class `tvpagfl`, which contains
 
@@ -334,8 +333,8 @@ summary(tv_estim)
     algorithm iterations.
 9.  `call`: The function call.
 
-Again, `tvpagfl` objects have generic `summary()`, `fitted()`,
-`resid()`, `df.residual`, `formula`, and `coef()` methods.
+> [!TIP]
+> Again, `tvpagfl` objects have generic `summary()`, `fitted()`, `resid()`, `df.residual`, `formula`, and `coef()` methods.
 
 In empirical applications, it is commonplace to encounter unbalanced
 panel data sets. In such instances, time-varying coefficient functions
@@ -368,8 +367,8 @@ summary(tv_estim_unbalanced)
 #> TRUE (950 iterations)
 #> 
 #> Information criterion:
-#>     IC lambda 
-#> 1.1915 5.0000 
+#>      IC  lambda 
+#> 0.18921 5.00000 
 #> 
 #> Residuals:
 #>      Min       1Q   Median       3Q      Max 
@@ -380,17 +379,55 @@ summary(tv_estim_unbalanced)
 #>  1  1  1  2  2  2  1  2  3  3  2  2  3  1  3  1  2  3  2  2 
 #> 
 #> Residual standard error: 1.04387 on 1353 degrees of freedom
-#> Mean squared error 1.06912
+#> Mean squared error: 1.06912
 #> Multiple R-squared: 0.73683, Adjusted R-squared: 0.73197
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+![](man/figures/README-unnamed-chunk-9-1.png)<!-- -->
 
-Furthermore, `tv_pagfl` lets you specify a lot more optionalities than
-shown here. For example, it is possible to adjust the polyomial degree
-and the number of interior knots in the spline basis system, or estimate
-a panel data model with a mix of time-varying and time-constant
-coefficients. See `?tv_pagfl()` for details.
+> [!TIP]
+> `tv_pagfl()` lets you specify a lot more optionalities than shown here. For example, it is possible to adjust the polyomial degree and the number of interior knots in the spline basis system, or estimate a panel data model with a mix of time-varying and time-constant coefficients. See `?tv_pagfl()` for details.
+
+## Observing a Group Structure
+
+It may occur that the group structure is known and does not need to be
+estimated. In such instances, `grouped_plm()` and `grouped_tv_plm()`
+make it easy to estimate a (time-varying) linear panel data model given
+an observed grouping.
+
+``` r
+groups <- sim$groups
+estim_oracle <- grouped_plm(y ~ ., data = data, n_periods = 150, groups = groups, method = "PLS")
+summary(estim_oracle)
+#> Call:
+#> grouped_plm(formula = y ~ ., data = data, groups = groups, n_periods = 150, 
+#>     method = "PLS")
+#> 
+#> Balanced panel: N = 20, T = 150, obs = 3000
+#> 
+#> Information criterion: 1.12877 
+#> 
+#> Residuals:
+#>      Min       1Q   Median       3Q      Max 
+#> -3.47858 -0.66283 -0.02688  0.72880  3.77812 
+#> 
+#> 3 groups:
+#>  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+#>  1  1  2  3  1  3  3  2  3  3  2  2  2  1  1  1  3  1  2  3 
+#> 
+#> Coefficients:
+#>                 a        b
+#> Group 1 -0.95114  1.61719
+#> Group 2 -0.49489 -1.23534
+#> Group 3  0.24172  1.61613
+#> 
+#> Residual standard error: 1.03695 on 2978 degrees of freedom
+#> Mean squared error: 1.06738
+#> Multiple R-squared: 0.72236, Adjusted R-squared: 0.7204
+```
+
+Besides not estimating the group structure, `grouped_plm()`
+(`grouped_tv_plm()`) behave identically to `pagfl()` (`tv_pagfl()`)
 
 ## Future Outlook
 
@@ -404,25 +441,27 @@ planned to include
 You are not a R-user? Worry not - An equivalent Python library is in the
 works.
 
-Please feel free to reach out if you have any further suggestions.
+Feel free to [reach out](mailto:paul.haimerl@econ.au.dk) if you have any
+suggestions or questions.
 
 ## References
 
 - Dhaene, G., & Jochmans, K. (2015). Split-panel jackknife estimation of
   fixed-effect models. *The Review of Economic Studies*, 82(3),
-  991-1030. DOI:
-  [10.1093/restud/rdv007](https://doi.org/10.1093/restud/rdv007)
+  991-1030.
+  [doi.org/10.1093/restud/rdv007](https://doi.org/10.1093/restud/rdv007)
+
+- Huang, J. Z., Wu, C. O., & Zhou, L. (2004). Polynomial spline
+  estimation and inference for varying coefficient models with
+  longitudinal data. Statistica Sinica, 763-788.
+  [jstor.org/stable/24307415](https://www.jstor.org/stable/24307415)
 
 - Mehrabani, A. (2023). Estimation and identification of latent group
   structures in panel data. *Journal of Econometrics*, 235(2),
-  1464-1482. DOI:
-  [10.1016/j.jeconom.2022.12.002](https://doi.org/10.1016/j.jeconom.2022.12.002)
-
-- Schumaker, L. (2007). Spline functions: basic theory. *Cambridge
-  university press*. DOI:
-  [10.1017/CBO9780511618994](https://doi.org/10.1017/CBO9780511618994)
+  1464-1482.
+  [doi.org/10.1016/j.jeconom.2022.12.002](https://doi.org/10.1016/j.jeconom.2022.12.002)
 
 - Su, L., Wang, X., & Jin, S. (2019). Sieve estimation of time-varying
   panel data models with latent structures. *Journal of Business &
-  Economic Statistics*, 37(2), 334-349. DOI:
-  [10.1080/07350015.2017.1340299](https://doi.org/10.1080/07350015.2017.1340299)
+  Economic Statistics*, 37(2), 334-349.
+  [doi.org/10.1080/07350015.2017.1340299](https://doi.org/10.1080/07350015.2017.1340299)

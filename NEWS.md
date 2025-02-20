@@ -1,11 +1,22 @@
-# PAGFL 1.1.2 (development version)
+# PAGFL 1.1.3 (development version)
+
+* Added a progress bar displaying the percentage of convergence to `pagfl` and `tv_pagfl` if `verbose` is selected
+* Slight changes in the formatting of the `print` method for `summary` of `pagfl` and `grouped_plm` objects
+* Fix of missing regressor name in the output of `pagfl` and `grouped_plm` when having a single regressor and passing an empty formula
+* Deprecation of `DGP` argument in `sim_tv_DGP`
+* Bugfix when passing a prescribed coefficient matrix and selecting `dynamic = TRUE` in `sim_DGP`
+* Bugfix to preclude explosive processes when selecting `dynamic = TRUE` in `sim_tv_DGP`
+* Added seeds to all function examples
+* Support for RcppArmadillo 14.4.0
+
+# PAGFL 1.1.2 (stable version)
 
 * Fixed backwards compatibility issue with the generic functions `fitted` and `resid`
 * Bugfix when passing index variables and an empty formula `y ~ .` for `tv_pagfl` and `grouped_tv_plm`
 * Improved documentation
 * Changed x-axis label in the plot produced by calling `summary()` of a `tvpagfl` object
 * Bugfix in the plot produced by calling `fitted()` and passing a character time-index variable
-* Added the current algorithm iteration and tuning parameter as a progress counter to the console if option `verbose` is selected
+* Added the current algorithm iteration and tuning parameter as a progress counter to the console for `pagfl` and `tv_pagfl` if option `verbose` is selected
 * Changed the IC selecting the best fitting tuning parameter for the `tv_pagfl` and `grouped_tv_plm` procedures to include the logarithmic mean squared error as the fitness term
 
 # PAGFL 1.1.1
